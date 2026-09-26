@@ -10,16 +10,24 @@
   --accent-soft: #e6f3f1;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0f1715;
-    --card-bg: #17221f;
-    --fg: #eef4f2;
-    --fg-muted: #9db1ac;
-    --border: #293733;
-    --accent: #4fd1c5;
-    --accent-soft: #1f3936;
-  }
+:root[data-theme="dark"] {
+  --bg: #0f1715;
+  --card-bg: #17221f;
+  --fg: #eef4f2;
+  --fg-muted: #9db1ac;
+  --border: #293733;
+  --accent: #4fd1c5;
+  --accent-soft: #1f3936;
+}
+
+:root[data-theme="sepia"] {
+  --bg: #efe3c4;
+  --card-bg: #f7efd9;
+  --fg: #3b2f22;
+  --fg-muted: #7a6a4f;
+  --border: #dcccaa;
+  --accent: #8a5a2b;
+  --accent-soft: #e3cfa0;
 }
 
 * { box-sizing: border-box; }

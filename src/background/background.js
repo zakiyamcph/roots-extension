@@ -34,9 +34,15 @@ chrome.runtime.onInstalled.addListener(async (details) => {
   if (details.reason === "install") {
     await chrome.storage.sync.set({ settings: DEFAULT_SETTINGS });
   }
-  // Clicking the toolbar icon opens the side panel instead of a popup.
-  chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(() => {});
 });
+
+// Clicking the toolbar icon opens the side panel instead of a popup. Set
+// unconditionally at every service worker startup (not just onInstalled) —
+// this setting isn't guaranteed to persist across every Chrome version's
+// service-worker lifecycle, and if it's ever unset, clicking the toolbar
+// icon does nothing (no popup, no onClicked listener registered), which
+// also means activeTab never gets granted for that tab.
+chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(() => {});
 
 async function getSettings() {
   const stored = await chrome.storage.sync.get("settings");

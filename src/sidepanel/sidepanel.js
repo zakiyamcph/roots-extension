@@ -44,6 +44,7 @@ function renderStatus(active) {
 }
 
 function renderSettings() {
+  document.documentElement.dataset.theme = settings.theme;
   els.toggleRootVisualizer.checked = settings.rootVisualizer;
   els.toggleDiacritics.checked = settings.diacritics;
   els.toggleHeatmap.checked = settings.heatmap;
@@ -120,6 +121,14 @@ els.openOptions.addEventListener("click", () => chrome.runtime.openOptionsPage()
 chrome.runtime.onMessage.addListener((message) => {
   if (message.type === "ROOTS_STATS_UPDATE" && message.tabId === currentTabId) {
     renderStats(message.stats);
+  }
+});
+
+// Reflect settings changed elsewhere (e.g. the options page) live in this panel.
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === "sync" && changes.settings) {
+    settings = { ...settings, ...changes.settings.newValue };
+    renderSettings();
   }
 });
 

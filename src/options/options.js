@@ -24,6 +24,7 @@ const els = {
 };
 
 function render(settings) {
+  document.documentElement.dataset.theme = settings.theme;
   for (const card of els.themeGrid.children) {
     card.dataset.selected = String(card.dataset.theme === settings.theme);
   }
@@ -81,5 +82,9 @@ els.optHeatmap.addEventListener("change", () => {
 els.optSensitivity.addEventListener("change", () => update({ heatmapSensitivity: els.optSensitivity.value }));
 
 els.resetDefaults.addEventListener("click", () => update({ ...DEFAULT_SETTINGS }));
+
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === "sync" && changes.settings) render(changes.settings.newValue);
+});
 
 init();
