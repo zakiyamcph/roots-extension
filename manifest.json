@@ -30,7 +30,7 @@
   "options_page": "src/options/options.html",
   "web_accessible_resources": [
     {
-      "resources": ["src/content/content.css", "src/data/lexicon.json", "src/data/frequency.json", "fonts/*"],
+      "resources": ["src/content/content.css", "src/data/lexicon.json", "src/data/frequency.json"],
       "matches": ["<all_urls>"]
     }
   ]
