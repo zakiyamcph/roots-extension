@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Roots — Settings</title>
+  <link rel="stylesheet" href="options.css" />
+</head>
+<body>
+  <main class="page">
+    <header class="page-header">
+      <span class="brand-mark" aria-hidden="true">ج‌ذ‌ر</span>
+      <div>
+        <h1>Roots settings</h1>
+        <p class="subtitle">Tune how the root visualizer, diacritics, and vocabulary heatmap behave everywhere you browse.</p>
+      </div>
+    </header>
+
+    <section class="card">
+      <h2>Theme</h2>
+      <div class="theme-grid" id="theme-grid">
+        <button type="button" class="theme-card" data-theme="light">
+          <span class="theme-preview theme-preview-light"></span>
+          Light
+        </button>
+        <button type="button" class="theme-card" data-theme="dark">
+          <span class="theme-preview theme-preview-dark"></span>
+          Dark
+        </button>
+        <button type="button" class="theme-card" data-theme="sepia">
+          <span class="theme-preview theme-preview-sepia"></span>
+          Sepia
+        </button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Typography</h2>
+      <div class="field">
+        <label for="font-family">Popover font</label>
+        <select id="font-family" class="select">
+          <option value="cairo">Cairo (modern, clear diacritics)</option>
+          <option value="amiri">Amiri (traditional Naskh)</option>
+          <option value="system">System Naskh (device default)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="font-scale">Text size: <span id="font-scale-value">100%</span></label>
+        <input type="range" id="font-scale" min="0.85" max="1.4" step="0.05" />
+      </div>
+      <div class="preview" id="font-preview">
+        <p class="preview-arabic">يَذْهَبُ الطَّالِبُ إِلَى الْمَكْتَبَةِ لِيَقْرَأَ كِتَابًا جَدِيدًا</p>
+        <p class="preview-caption">Preview — line-height and sizing are tuned to keep tashkeel legible</p>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Feature defaults</h2>
+      <p class="card-desc">These apply the moment you activate Roots on a new tab. You can still override them per-tab from the side panel.</p>
+
+      <label class="switch-row">
+        <span>
+          <span class="switch-label">Root &amp; Form Visualizer</span>
+          <span class="switch-desc">Hover overlay showing trilateral roots and Forms I–X</span>
+        </span>
+        <input type="checkbox" id="opt-root-visualizer" />
+        <span class="switch-track" aria-hidden="true"></span>
+      </label>
+
+      <label class="switch-row">
+        <span>
+          <span class="switch-label">Show diacritics by default</span>
+          <span class="switch-desc">Detected verbs display full vocalization until toggled off</span>
+        </span>
+        <input type="checkbox" id="opt-diacritics" />
+        <span class="switch-track" aria-hidden="true"></span>
+      </label>
+
+      <label class="switch-row">
+        <span>
+          <span class="switch-label">Frequency heatmap</span>
+          <span class="switch-desc">Subtle highlight on low-frequency / academic vocabulary</span>
+        </span>
+        <input type="checkbox" id="opt-heatmap" />
+        <span class="switch-track" aria-hidden="true"></span>
+      </label>
+
+      <div class="field" id="opt-sensitivity-row">
+        <label for="opt-sensitivity">Heatmap sensitivity</label>
+        <select id="opt-sensitivity" class="select">
+          <option value="low">Low — only rare, long words</option>
+          <option value="medium">Medium — uncommon words</option>
+          <option value="high">High — uncommon + medium-frequency words</option>
+        </select>
+      </div>
+    </section>
+
+    <div class="actions">
+      <button id="reset-defaults" type="button" class="btn btn-secondary">Reset to defaults</button>
+      <span class="save-indicator" id="save-indicator" aria-live="polite"></span>
+    </div>
+
+    <footer class="page-footer">Roots v0.1.0 — a companion for reading non-vocalized Arabic text</footer>
+  </main>
+
+  <script src="options.js"></script>
+</body>
+</html>
