@@ -1,0 +1,240 @@
+{
+  "_comment": "Seed lexicon of Arabic trilateral roots. Keys are bare (unvocalized) dictionary (Form I, 3rd person masc. singular past) surface forms, used for matching against page text after affix-stripping. Only linguistically attested forms are listed per root — absent forms are not fabricated. Extend this file (or swap it for a generated one) to broaden coverage.",
+  "version": 1,
+  "roots": {
+    "كتب": {
+      "root": "ك ت ب",
+      "meaningCore": "writing",
+      "definition": "to write",
+      "frequencyTier": "high",
+      "forms": {
+        "I":   { "verb": "كَتَبَ", "transliteration": "kataba",   "meaning": "to write" },
+        "II":  { "verb": "كَتَّبَ", "transliteration": "kattaba",  "meaning": "to make (someone) write; to dictate" },
+        "III": { "verb": "كَاتَبَ", "transliteration": "kātaba",   "meaning": "to correspond with (write to one another)" },
+        "VI":  { "verb": "تَكَاتَبَ", "transliteration": "takātaba", "meaning": "to correspond with each other" },
+        "VIII":{ "verb": "اِكْتَتَبَ", "transliteration": "iktataba", "meaning": "to subscribe; to register" },
+        "X":   { "verb": "اِسْتَكْتَبَ", "transliteration": "istaktaba", "meaning": "to ask someone to write; to have (something) written" }
+      }
+    },
+    "فهم": {
+      "root": "ف ه م",
+      "meaningCore": "understanding",
+      "definition": "to understand",
+      "frequencyTier": "high",
+      "forms": {
+        "I":  { "verb": "فَهِمَ", "transliteration": "fahima", "meaning": "to understand" },
+        "II": { "verb": "فَهَّمَ", "transliteration": "fahhama", "meaning": "to make (someone) understand; to explain" },
+        "V":  { "verb": "تَفَهَّمَ", "transliteration": "tafahhama", "meaning": "to comprehend fully; to show understanding" }
+      }
+    },
+    "درس": {
+      "root": "د ر س",
+      "meaningCore": "study",
+      "definition": "to study",
+      "frequencyTier": "high",
+      "forms": {
+        "I":   { "verb": "دَرَسَ", "transliteration": "darasa", "meaning": "to study" },
+        "II":  { "verb": "دَرَّسَ", "transliteration": "darrasa", "meaning": "to teach" },
+        "III": { "verb": "دَارَسَ", "transliteration": "dārasa", "meaning": "to study together with" },
+        "VI":  { "verb": "تَدَارَسَ", "transliteration": "tadārasa", "meaning": "to study something together" }
+      }
+    },
+    "علم": {
+      "root": "ع ل م",
+      "meaningCore": "knowledge",
+      "definition": "to know",
+      "frequencyTier": "high",
+      "forms": {
+        "I":  { "verb": "عَلِمَ", "transliteration": "ʿalima", "meaning": "to know" },
+        "II": { "verb": "عَلَّمَ", "transliteration": "ʿallama", "meaning": "to teach" },
+        "IV": { "verb": "أَعْلَمَ", "transliteration": "aʿlama", "meaning": "to inform, notify" },
+        "V":  { "verb": "تَعَلَّمَ", "transliteration": "taʿallama", "meaning": "to learn" },
+        "X":  { "verb": "اِسْتَعْلَمَ", "transliteration": "istaʿlama", "meaning": "to inquire" }
+      }
+    },
+    "قرب": {
+      "root": "ق ر ب",
+      "meaningCore": "nearness",
+      "definition": "to be near",
+      "frequencyTier": "medium",
+      "forms": {
+        "I":    { "verb": "قَرُبَ", "transliteration": "qaruba", "meaning": "to be near, close" },
+        "II":   { "verb": "قَرَّبَ", "transliteration": "qarraba", "meaning": "to bring near" },
+        "III":  { "verb": "قَارَبَ", "transliteration": "qāraba", "meaning": "to approximate; to come close to" },
+        "V":    { "verb": "تَقَرَّبَ", "transliteration": "taqarraba", "meaning": "to draw near; to ingratiate oneself" },
+        "VI":   { "verb": "تَقَارَبَ", "transliteration": "taqāraba", "meaning": "to be close to one another; to converge" },
+        "VIII": { "verb": "اِقْتَرَبَ", "transliteration": "iqtaraba", "meaning": "to approach, draw near" }
+      }
+    },
+    "خرج": {
+      "root": "خ ر ج",
+      "meaningCore": "exiting",
+      "definition": "to go out",
+      "frequencyTier": "high",
+      "forms": {
+        "I":  { "verb": "خَرَجَ", "transliteration": "kharaja", "meaning": "to go out, leave" },
+        "II": { "verb": "خَرَّجَ", "transliteration": "kharraja", "meaning": "to graduate (someone); to train" },
+        "IV": { "verb": "أَخْرَجَ", "transliteration": "akhraja", "meaning": "to take out, produce (e.g. a film)" },
+        "X":  { "verb": "اِسْتَخْرَجَ", "transliteration": "istakhraja", "meaning": "to extract" }
+      }
+    },
+    "دخل": {
+      "root": "د خ ل",
+      "meaningCore": "entering",
+      "definition": "to enter",
+      "frequencyTier": "high",
+      "forms": {
+        "I":  { "verb": "دَخَلَ", "transliteration": "dakhala", "meaning": "to enter" },
+        "IV": { "verb": "أَدْخَلَ", "transliteration": "adkhala", "meaning": "to insert, introduce" },
+        "V":  { "verb": "تَدَخَّلَ", "transliteration": "tadakhkhala", "meaning": "to interfere, intervene" }
+      }
+    },
+    "جمع": {
+      "root": "ج م ع",
+      "meaningCore": "gathering",
+      "definition": "to gather, collect",
+      "frequencyTier": "high",
+      "forms": {
+        "I":    { "verb": "جَمَعَ", "transliteration": "jamaʿa", "meaning": "to gather, collect" },
+        "V":    { "verb": "تَجَمَّعَ", "transliteration": "tajammaʿa", "meaning": "to gather, assemble (intransitive)" },
+        "VIII": { "verb": "اِجْتَمَعَ", "transliteration": "ijtamaʿa", "meaning": "to meet, assemble" },
+        "X":    { "verb": "اِسْتَجْمَعَ", "transliteration": "istajmaʿa", "meaning": "to gather up (e.g. one's courage)" }
+      }
+    },
+    "طلب": {
+      "root": "ط ل ب",
+      "meaningCore": "requesting",
+      "definition": "to request, ask for",
+      "frequencyTier": "high",
+      "forms": {
+        "I": { "verb": "طَلَبَ", "transliteration": "ṭalaba", "meaning": "to request, ask for" },
+        "V": { "verb": "تَطَلَّبَ", "transliteration": "taṭallaba", "meaning": "to require, necessitate" }
+      }
+    },
+    "عمل": {
+      "root": "ع م ل",
+      "meaningCore": "work/action",
+      "definition": "to work, do",
+      "frequencyTier": "high",
+      "forms": {
+        "I":   { "verb": "عَمِلَ", "transliteration": "ʿamila", "meaning": "to work, do" },
+        "III": { "verb": "عَامَلَ", "transliteration": "ʿāmala", "meaning": "to treat, deal with" },
+        "VI":  { "verb": "تَعَامَلَ", "transliteration": "taʿāmala", "meaning": "to deal with one another" }
+      }
+    },
+    "نظر": {
+      "root": "ن ظ ر",
+      "meaningCore": "looking/viewing",
+      "definition": "to look",
+      "frequencyTier": "high",
+      "forms": {
+        "I":    { "verb": "نَظَرَ", "transliteration": "naẓara", "meaning": "to look, view" },
+        "III":  { "verb": "نَاظَرَ", "transliteration": "nāẓara", "meaning": "to debate" },
+        "VIII": { "verb": "اِنْتَظَرَ", "transliteration": "intaẓara", "meaning": "to wait" }
+      }
+    },
+    "خدم": {
+      "root": "خ د م",
+      "meaningCore": "service",
+      "definition": "to serve",
+      "frequencyTier": "high",
+      "forms": {
+        "I": { "verb": "خَدَمَ", "transliteration": "khadama", "meaning": "to serve" },
+        "X": { "verb": "اِسْتَخْدَمَ", "transliteration": "istakhdama", "meaning": "to use, employ" }
+      }
+    },
+    "قبل": {
+      "root": "ق ب ل",
+      "meaningCore": "acceptance/facing",
+      "definition": "to accept",
+      "frequencyTier": "high",
+      "forms": {
+        "I":   { "verb": "قَبِلَ", "transliteration": "qabila", "meaning": "to accept" },
+        "III": { "verb": "قَابَلَ", "transliteration": "qābala", "meaning": "to meet, face" },
+        "IV":  { "verb": "أَقْبَلَ", "transliteration": "aqbala", "meaning": "to approach, come forward" },
+        "V":   { "verb": "تَقَبَّلَ", "transliteration": "taqabbala", "meaning": "to accept willingly" },
+        "VI":  { "verb": "تَقَابَلَ", "transliteration": "taqābala", "meaning": "to meet one another" },
+        "X":   { "verb": "اِسْتَقْبَلَ", "transliteration": "istaqbala", "meaning": "to receive, welcome" }
+      }
+    },
+    "رسل": {
+      "root": "ر س ل",
+      "meaningCore": "sending",
+      "definition": "to send",
+      "frequencyTier": "high",
+      "forms": {
+        "IV": { "verb": "أَرْسَلَ", "transliteration": "arsala", "meaning": "to send" },
+        "X":  { "verb": "اِسْتَرْسَلَ", "transliteration": "istarsala", "meaning": "to proceed at length; to ramble on" }
+      }
+    },
+    "قدم": {
+      "root": "ق د م",
+      "meaningCore": "arrival/precedence",
+      "definition": "to arrive, come forward",
+      "frequencyTier": "high",
+      "forms": {
+        "I":   { "verb": "قَدِمَ", "transliteration": "qadima", "meaning": "to arrive, come" },
+        "II":  { "verb": "قَدَّمَ", "transliteration": "qaddama", "meaning": "to present, offer" },
+        "IV":  { "verb": "أَقْدَمَ", "transliteration": "aqdama", "meaning": "to dare; to proceed" },
+        "V":   { "verb": "تَقَدَّمَ", "transliteration": "taqaddama", "meaning": "to advance, progress" },
+        "VI":  { "verb": "تَقَادَمَ", "transliteration": "taqādama", "meaning": "to become old, obsolete" },
+        "X":   { "verb": "اِسْتَقْدَمَ", "transliteration": "istaqdama", "meaning": "to bring forward; to import (e.g. labor)" }
+      }
+    },
+    "حضر": {
+      "root": "ح ض ر",
+      "meaningCore": "presence",
+      "definition": "to attend, be present",
+      "frequencyTier": "high",
+      "forms": {
+        "I":  { "verb": "حَضَرَ", "transliteration": "ḥaḍara", "meaning": "to attend, be present" },
+        "II": { "verb": "حَضَّرَ", "transliteration": "ḥaḍḍara", "meaning": "to prepare" },
+        "IV": { "verb": "أَحْضَرَ", "transliteration": "aḥḍara", "meaning": "to bring" },
+        "V":  { "verb": "تَحَضَّرَ", "transliteration": "taḥaḍḍara", "meaning": "to become civilized; to get ready" },
+        "X":  { "verb": "اِسْتَحْضَرَ", "transliteration": "istaḥḍara", "meaning": "to summon; to recall" }
+      }
+    },
+    "كلم": {
+      "root": "ك ل م",
+      "meaningCore": "speech",
+      "definition": "to speak",
+      "frequencyTier": "high",
+      "forms": {
+        "II": { "verb": "كَلَّمَ", "transliteration": "kallama", "meaning": "to speak to (someone)" },
+        "V":  { "verb": "تَكَلَّمَ", "transliteration": "takallama", "meaning": "to speak, talk" }
+      }
+    },
+    "كسر": {
+      "root": "ك س ر",
+      "meaningCore": "breaking",
+      "definition": "to break",
+      "frequencyTier": "medium",
+      "forms": {
+        "I":    { "verb": "كَسَرَ", "transliteration": "kasara", "meaning": "to break" },
+        "II":   { "verb": "كَسَّرَ", "transliteration": "kassara", "meaning": "to smash, shatter (intensive)" },
+        "VII":  { "verb": "اِنْكَسَرَ", "transliteration": "inkasara", "meaning": "to be broken, get broken" }
+      }
+    },
+    "فتح": {
+      "root": "ف ت ح",
+      "meaningCore": "opening",
+      "definition": "to open",
+      "frequencyTier": "high",
+      "forms": {
+        "I":   { "verb": "فَتَحَ", "transliteration": "fataḥa", "meaning": "to open" },
+        "VI":  { "verb": "تَفَاتَحَ", "transliteration": "tafātaḥa", "meaning": "to open up (a topic) with one another" },
+        "VII": { "verb": "اِنْفَتَحَ", "transliteration": "infataḥa", "meaning": "to be opened; to open up (become open-minded)" }
+      }
+    },
+    "بدأ": {
+      "root": "ب د أ",
+      "meaningCore": "beginning",
+      "definition": "to begin",
+      "frequencyTier": "high",
+      "forms": {
+        "I":   { "verb": "بَدَأَ", "transliteration": "badaʾa", "meaning": "to begin, start" },
+        "III": { "verb": "بَادَأَ", "transliteration": "bādaʾa", "meaning": "to initiate (with someone)" }
+      }
+    }
+  }
+}
