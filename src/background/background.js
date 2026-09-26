@@ -67,42 +67,49 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   (async () => {
-    switch (message?.type) {
-      case "ROOTS_REQUEST_ACTIVATE": {
-        const tabId = message.tabId ?? sender.tab?.id;
-        if (tabId == null) return sendResponse({ ok: false, error: "no-tab" });
-        sendResponse(await activateOnTab(tabId));
-        return;
+    try {
+      switch (message?.type) {
+        case "ROOTS_REQUEST_ACTIVATE": {
+          const tabId = message.tabId ?? sender.tab?.id;
+          if (tabId == null) return sendResponse({ ok: false, error: "no-tab" });
+          sendResponse(await activateOnTab(tabId));
+          return;
+        }
+        case "ROOTS_REQUEST_DEACTIVATE": {
+          const tabId = message.tabId ?? sender.tab?.id;
+          if (tabId == null) return sendResponse({ ok: false, error: "no-tab" });
+          sendResponse(await deactivateOnTab(tabId));
+          return;
+        }
+        case "ROOTS_GET_STATUS": {
+          const tabId = message.tabId;
+          sendResponse({ active: Boolean(activeTabs.get(tabId)) });
+          return;
+        }
+        case "ROOTS_GET_SETTINGS": {
+          sendResponse(await getSettings());
+          return;
+        }
+        case "ROOTS_SET_SETTINGS": {
+          const merged = { ...(await getSettings()), ...message.settings };
+          await chrome.storage.sync.set({ settings: merged });
+          sendResponse({ ok: true, settings: merged });
+          return;
+        }
+        case "ROOTS_STATS": {
+          // Forward page-scan stats from the content script to any open side panel.
+          chrome.runtime.sendMessage({ type: "ROOTS_STATS_UPDATE", tabId: sender.tab?.id, stats: message.stats }).catch(() => {});
+          sendResponse({ ok: true });
+          return;
+        }
+        default:
+          sendResponse({ ok: false, error: "unknown-message" });
       }
-      case "ROOTS_REQUEST_DEACTIVATE": {
-        const tabId = message.tabId ?? sender.tab?.id;
-        if (tabId == null) return sendResponse({ ok: false, error: "no-tab" });
-        sendResponse(await deactivateOnTab(tabId));
-        return;
-      }
-      case "ROOTS_GET_STATUS": {
-        const tabId = message.tabId;
-        sendResponse({ active: Boolean(activeTabs.get(tabId)) });
-        return;
-      }
-      case "ROOTS_GET_SETTINGS": {
-        sendResponse(await getSettings());
-        return;
-      }
-      case "ROOTS_SET_SETTINGS": {
-        const merged = { ...(await getSettings()), ...message.settings };
-        await chrome.storage.sync.set({ settings: merged });
-        sendResponse({ ok: true, settings: merged });
-        return;
-      }
-      case "ROOTS_STATS": {
-        // Forward page-scan stats from the content script to any open side panel.
-        chrome.runtime.sendMessage({ type: "ROOTS_STATS_UPDATE", tabId: sender.tab?.id, stats: message.stats }).catch(() => {});
-        sendResponse({ ok: true });
-        return;
-      }
-      default:
-        sendResponse({ ok: false, error: "unknown-message" });
+    } catch (err) {
+      // e.g. scripting.executeScript rejects on restricted pages (chrome://,
+      // the Web Store, etc.) — surface a clean error instead of hanging the
+      // caller's sendMessage promise forever.
+      sendResponse({ ok: false, error: err?.message ?? String(err) });
     }
   })();
   return true; // keep the message channel open for the async response

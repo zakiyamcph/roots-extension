@@ -22,8 +22,14 @@ async function getActiveTab() {
   return tab;
 }
 
-function isSupportedUrl(url) {
-  return typeof url === "string" && /^https?:\/\//.test(url);
+function isKnownUnsupportedUrl(url) {
+  // Under activeTab-only permissions, `tab.url` is only populated once the
+  // user has granted access to *this specific tab* (e.g. by clicking the
+  // toolbar icon or a control inside this panel). On a tab we haven't been
+  // granted yet, `url` comes back undefined — that is NOT the same as the
+  // page being unsupported, so we only block when we positively know the
+  // scheme can't be scripted (chrome://, the Web Store, file://, etc.).
+  return typeof url === "string" && !/^https?:\/\//.test(url);
 }
 
 function renderStatus(active) {
@@ -59,7 +65,7 @@ async function refresh() {
   settings = await chrome.runtime.sendMessage({ type: "ROOTS_GET_SETTINGS" });
   renderSettings();
 
-  if (!tab || !isSupportedUrl(tab.url)) {
+  if (!tab || isKnownUnsupportedUrl(tab.url)) {
     els.toggleActivate.disabled = true;
     els.statusHint.textContent = "Roots can't run on this page.";
     renderStatus(false);
@@ -81,8 +87,16 @@ els.toggleActivate.addEventListener("click", async () => {
   const activating = els.toggleActivate.dataset.active !== "true";
   els.toggleActivate.disabled = true;
   const type = activating ? "ROOTS_REQUEST_ACTIVATE" : "ROOTS_REQUEST_DEACTIVATE";
-  await chrome.runtime.sendMessage({ type, tabId: currentTabId });
+  const res = await chrome.runtime.sendMessage({ type, tabId: currentTabId });
   els.toggleActivate.disabled = false;
+
+  if (!res?.ok) {
+    els.statusHint.textContent = activating
+      ? "Couldn't activate on this page (it may be a restricted browser page)."
+      : "Couldn't deactivate — try reloading the tab.";
+    renderStatus(false);
+    return;
+  }
   renderStatus(activating);
   if (!activating) renderStats({ verbs: 0, advanced: 0 });
 });
