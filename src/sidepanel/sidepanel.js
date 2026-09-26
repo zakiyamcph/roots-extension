@@ -84,11 +84,17 @@ async function pushSettings(partial) {
 }
 
 els.toggleActivate.addEventListener("click", async () => {
-  if (currentTabId == null) return;
+  console.log("[Roots] activate button clicked, currentTabId =", currentTabId);
+  if (currentTabId == null) {
+    console.log("[Roots] currentTabId is null, aborting click handler");
+    return;
+  }
   const activating = els.toggleActivate.dataset.active !== "true";
   els.toggleActivate.disabled = true;
   const type = activating ? "ROOTS_REQUEST_ACTIVATE" : "ROOTS_REQUEST_DEACTIVATE";
+  console.log("[Roots] sending", type, "for tab", currentTabId);
   const res = await chrome.runtime.sendMessage({ type, tabId: currentTabId });
+  console.log("[Roots] got response:", res);
   els.toggleActivate.disabled = false;
 
   if (!res?.ok) {

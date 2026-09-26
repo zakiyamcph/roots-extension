@@ -55,19 +55,28 @@ async function setBadge(tabId, isActive) {
 }
 
 async function activateOnTab(tabId) {
-  if (await isTabActive(tabId)) return { ok: true, alreadyActive: true };
+  console.log("[Roots BG] activateOnTab", tabId);
+  if (await isTabActive(tabId)) {
+    console.log("[Roots BG] already active");
+    return { ok: true, alreadyActive: true };
+  }
 
+  console.log("[Roots BG] inserting CSS...");
   await chrome.scripting.insertCSS({ target: { tabId }, files: [CONTENT_CSS] });
+  console.log("[Roots BG] CSS inserted, executing content script...");
   await chrome.scripting.executeScript({ target: { tabId }, files: [CONTENT_JS] });
+  console.log("[Roots BG] content script executed, sending ROOTS_INIT...");
 
   const settings = await getSettings();
   const initResult = await chrome.tabs.sendMessage(tabId, { type: "ROOTS_INIT", settings });
+  console.log("[Roots BG] ROOTS_INIT result:", initResult);
   if (!initResult?.ok) {
     throw new Error(initResult?.error || "content script failed to initialize");
   }
 
   await markTabActive(tabId, true);
   await setBadge(tabId, true);
+  console.log("[Roots BG] activation complete");
   return { ok: true, alreadyActive: false };
 }
 
@@ -92,7 +101,10 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
   }
 });
 
+console.log("[Roots BG] service worker (re)started");
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  console.log("[Roots BG] received message:", message?.type, message);
   (async () => {
     try {
       switch (message?.type) {
