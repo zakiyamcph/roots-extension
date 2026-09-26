@@ -36,13 +36,33 @@ chrome.runtime.onInstalled.addListener(async (details) => {
   }
 });
 
-// Clicking the toolbar icon opens the side panel instead of a popup. Set
-// unconditionally at every service worker startup (not just onInstalled) —
-// this setting isn't guaranteed to persist across every Chrome version's
-// service-worker lifecycle, and if it's ever unset, clicking the toolbar
-// icon does nothing (no popup, no onClicked listener registered), which
-// also means activeTab never gets granted for that tab.
-chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(() => {});
+// openPanelOnActionClick is deliberately OFF: it makes the toolbar icon
+// click auto-open the panel, but that means chrome.action.onClicked never
+// fires — and clicking a button *inside* an already-open panel does not
+// grant/refresh activeTab for whatever tab is focused (confirmed: this was
+// the actual cause of "Activate on this page" failing with "Cannot access
+// contents of the page..."). action.onClicked, below, is the one gesture
+// Chrome guarantees comes with a valid activeTab grant for that exact tab,
+// so it both opens the panel AND activates directly, in the same gesture.
+chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false }).catch(() => {});
+
+chrome.action.onClicked.addListener(async (tab) => {
+  try {
+    await chrome.sidePanel.open({ tabId: tab.id });
+  } catch (err) {
+    console.error("[Roots BG] failed to open side panel:", err);
+  }
+  try {
+    if (!(await isTabActive(tab.id))) {
+      await activateOnTab(tab.id);
+    }
+  } catch (err) {
+    // Restricted page (chrome://, Web Store, etc.) — the panel still opens;
+    // its own "Activate on this page" button will surface this same error
+    // if the user tries again.
+    console.error("[Roots BG] auto-activate on icon click failed:", err);
+  }
+});
 
 async function getSettings() {
   const stored = await chrome.storage.sync.get("settings");
@@ -55,28 +75,19 @@ async function setBadge(tabId, isActive) {
 }
 
 async function activateOnTab(tabId) {
-  console.log("[Roots BG] activateOnTab", tabId);
-  if (await isTabActive(tabId)) {
-    console.log("[Roots BG] already active");
-    return { ok: true, alreadyActive: true };
-  }
+  if (await isTabActive(tabId)) return { ok: true, alreadyActive: true };
 
-  console.log("[Roots BG] inserting CSS...");
   await chrome.scripting.insertCSS({ target: { tabId }, files: [CONTENT_CSS] });
-  console.log("[Roots BG] CSS inserted, executing content script...");
   await chrome.scripting.executeScript({ target: { tabId }, files: [CONTENT_JS] });
-  console.log("[Roots BG] content script executed, sending ROOTS_INIT...");
 
   const settings = await getSettings();
   const initResult = await chrome.tabs.sendMessage(tabId, { type: "ROOTS_INIT", settings });
-  console.log("[Roots BG] ROOTS_INIT result:", initResult);
   if (!initResult?.ok) {
     throw new Error(initResult?.error || "content script failed to initialize");
   }
 
   await markTabActive(tabId, true);
   await setBadge(tabId, true);
-  console.log("[Roots BG] activation complete");
   return { ok: true, alreadyActive: false };
 }
 
@@ -101,10 +112,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
   }
 });
 
-console.log("[Roots BG] service worker (re)started");
-
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log("[Roots BG] received message:", message?.type, message);
   (async () => {
     try {
       switch (message?.type) {

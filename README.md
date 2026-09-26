@@ -10,9 +10,9 @@ spot low-frequency/academic vocabulary via a subtle heatmap.
 1. Open `chrome://extensions`.
 2. Enable **Developer mode** (top right).
 3. Click **Load unpacked** and select this folder.
-4. Click the Roots icon in the toolbar — it opens the side panel.
-5. Navigate to any page with Arabic text, then click **Activate on this
-   page** in the panel.
+4. Navigate to a page with Arabic text, then click the Roots icon in the
+   toolbar — this opens the side panel **and** activates Roots on that page
+   in the same click.
 
 There is no build step — it's plain HTML/CSS/JS, loaded directly.
 
@@ -28,18 +28,27 @@ cd test && python3 -m http.server 8000
 # then open http://localhost:8000/sample.html
 ```
 
-### A note on activeTab and tab switching
+### A note on activeTab and why activation lives on the icon click
 
 This extension deliberately requests only `activeTab` (no `tabs` permission,
 no host permissions), matching the spec it was built to. `activeTab` access
-is granted per tab by a genuine user gesture aimed at the extension —
-clicking the toolbar icon is always sufficient. Whether clicking a control
-*inside* an already-open side panel also (re-)grants it for whatever tab you
-just switched to is a Chrome behavior we wouldn't rely on without testing
-against your exact Chrome version. If "Activate on this page" ever fails
-right after switching tabs, click the toolbar icon again first — that always
-re-grants access for the now-active tab — then retry. The panel surfaces a
-clear error in that case rather than hanging or silently lying about success.
+is granted only by specific gestures Chrome recognizes as "invoking the
+extension" — clicking the toolbar icon is always one of them. **Clicking a
+button inside an already-open side panel is not** (confirmed empirically:
+it fails with "Cannot access contents of the page..."), so activation is
+triggered directly from `chrome.action.onClicked` in the background worker
+(`src/background/background.js`), which both opens the side panel and
+injects the content script in the same gesture. Because of this,
+`sidePanel.setPanelBehavior({ openPanelOnActionClick: ... })` is set to
+`false`, not `true` — otherwise Chrome would auto-open the panel and
+`onClicked` would never fire at all.
+
+The side panel's own "Activate on this page" / "Deactivate on this page"
+button still works for toggling on the *same* tab afterward, since
+deactivating just messages the already-injected content script (no fresh
+`activeTab` needed), and reactivating on that same tab reuses the grant from
+the original icon click — which stays valid until the tab navigates. If you
+navigate to a new page in that tab, click the toolbar icon again.
 
 ## Architecture
 

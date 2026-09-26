@@ -14,7 +14,6 @@
 //     the page's stylesheet.
 
 (function () {
-  console.log("[Roots CS] content script executing, __rootsInjected =", window.__rootsInjected);
   if (window.__rootsInjected) return;
   window.__rootsInjected = true;
 
@@ -541,16 +540,12 @@
   }
 
   function handleRuntimeMessage(message, _sender, sendResponse) {
-    console.log("[Roots CS] received message:", message?.type);
     switch (message?.type) {
       case "ROOTS_INIT":
         init(message.settings)
-          .then(() => {
-            console.log("[Roots CS] init() succeeded");
-            sendResponse({ ok: true });
-          })
+          .then(() => sendResponse({ ok: true }))
           .catch((err) => {
-            console.error("[Roots CS] init() failed:", err);
+            console.error("[Roots] content script failed to initialize:", err);
             sendResponse({ ok: false, error: err?.message ?? String(err) });
           });
         return true;
