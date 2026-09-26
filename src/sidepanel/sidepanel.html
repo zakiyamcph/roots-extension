@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Roots</title>
+  <link rel="stylesheet" href="sidepanel.css" />
+</head>
+<body>
+  <div class="panel">
+    <header class="panel-header">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">ج‌ذ‌ر</span>
+        <span class="brand-name">Roots</span>
+      </div>
+      <span id="status-pill" class="status-pill" data-state="off">Off</span>
+    </header>
+
+    <section class="section">
+      <button id="toggle-activate" class="btn btn-primary btn-block" type="button">
+        Activate on this page
+      </button>
+      <p class="hint" id="status-hint">Scans the current tab for Arabic verbs and vocabulary.</p>
+    </section>
+
+    <section class="section stats" id="stats-section" hidden>
+      <div class="stat">
+        <span class="stat-value" id="stat-verbs">0</span>
+        <span class="stat-label">roots detected</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value" id="stat-advanced">0</span>
+        <span class="stat-label">advanced words</span>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">Features</h2>
+
+      <label class="switch-row">
+        <span>
+          <span class="switch-label">Root &amp; Form Visualizer</span>
+          <span class="switch-desc">Hover a verb to see its root and forms</span>
+        </span>
+        <input type="checkbox" id="toggle-root-visualizer" />
+        <span class="switch-track" aria-hidden="true"></span>
+      </label>
+
+      <label class="switch-row">
+        <span>
+          <span class="switch-label">Diacritics</span>
+          <span class="switch-desc">Show full vocalization by default</span>
+        </span>
+        <input type="checkbox" id="toggle-diacritics" />
+        <span class="switch-track" aria-hidden="true"></span>
+      </label>
+
+      <label class="switch-row">
+        <span>
+          <span class="switch-label">Frequency Heatmap</span>
+          <span class="switch-desc">Highlight low-frequency vocabulary</span>
+        </span>
+        <input type="checkbox" id="toggle-heatmap" />
+        <span class="switch-track" aria-hidden="true"></span>
+      </label>
+
+      <div class="field-row" id="sensitivity-row">
+        <label for="select-sensitivity" class="field-label">Heatmap sensitivity</label>
+        <select id="select-sensitivity" class="select">
+          <option value="low">Low — only rare, long words</option>
+          <option value="medium">Medium — uncommon words</option>
+          <option value="high">High — uncommon + medium words</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">Appearance</h2>
+      <div class="theme-swatches" id="theme-swatches">
+        <button type="button" class="swatch" data-theme="light" title="Light">☀️</button>
+        <button type="button" class="swatch" data-theme="dark" title="Dark">🌙</button>
+        <button type="button" class="swatch" data-theme="sepia" title="Sepia">📜</button>
+      </div>
+    </section>
+
+    <footer class="panel-footer">
+      <button id="open-options" class="link-btn" type="button">More settings…</button>
+    </footer>
+  </div>
+
+  <script src="sidepanel.js"></script>
+</body>
+</html>
