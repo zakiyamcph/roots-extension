@@ -18,10 +18,20 @@
   window.__rootsInjected = true;
 
   const DIACRITIC_RE = /[ً-ٰٟۖ-ۭـ]/g;
-  const ARABIC_WORD_RE = /[؀-ۿݐ-ݿࢠ-ࣿﭐ-﷿ﹰ-﻿]+/g;
+  // Broad Arabic block, but each character is excluded via lookahead if it's
+  // punctuation (Arabic comma/semicolon/question mark etc.) or a digit
+  // (Arabic-Indic / Extended) rather than a letter, diacritic, or tatweel —
+  // otherwise a trailing comma would stay glued to a word (breaking lexicon
+  // lookup) and digits would get heat-flagged as vocabulary.
+  const ARABIC_WORD_RE = /(?:(?![\u0600-\u0605\u060C\u061B\u061E\u061F\u0660-\u066D\u06D4\u06DD\u06DE\u06E9\u06F0-\u06F9])[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF])+/g;
   const MAX_WRAPPED_WORDS = 6000; // safety cap for very large pages
 
-  const PREFIXES = ["بال", "كال", "فال", "وال", "لل", "ال", "س", "سي", "و", "ف", "ب", "ك", "ل"];
+  // Includes the four imperfective (present-tense) prefixes ي/ت/ن/ا (the hamza
+  // variant أ is already folded to ا by normalize() before stripping runs),
+  // alongside attached clitics, the definite article, and common combos.
+  // Extra false-positive stems from this are harmless — they simply won't be
+  // found in the closed lexicon/frequency lookup.
+  const PREFIXES = ["بال", "كال", "فال", "وال", "لل", "ال", "س", "سي", "و", "ف", "ب", "ك", "ل", "ي", "ت", "ن", "ا"];
   const SUFFIXES = ["هما", "كما", "تما", "ون", "ين", "ات", "هم", "هن", "كم", "كن", "نا", "تم", "تن", "ها", "وا", "ة", "ه", "ك", "ي", "ت", "ا"];
 
   const state = {
@@ -129,7 +139,11 @@
         const parent = node.parentElement;
         if (!parent) return NodeFilter.FILTER_REJECT;
         if (SKIP_TAGS.has(parent.tagName)) return NodeFilter.FILTER_REJECT;
-        if (parent.closest("[data-roots-ui]")) return NodeFilter.FILTER_REJECT;
+        // closest() includes the element itself, so this also rejects the
+        // text child of a span we already wrapped (matters if a scan ever
+        // runs twice on the same DOM — otherwise it would nest spans).
+        if (parent.closest("[data-roots-ui], [data-roots-word]")) return NodeFilter.FILTER_REJECT;
+        if (parent.closest("svg")) return NodeFilter.FILTER_REJECT;
         if (parent.isContentEditable) return NodeFilter.FILTER_REJECT;
         if (!ARABIC_WORD_RE.test(node.nodeValue)) return NodeFilter.FILTER_REJECT;
         ARABIC_WORD_RE.lastIndex = 0;
@@ -514,14 +528,23 @@
     document.removeEventListener("mouseover", onMouseOver, true);
     document.removeEventListener("mouseout", onMouseOut, true);
     document.removeEventListener("selectionchange", onSelectionChange);
+    // Reactivating (without a page reload) re-runs this whole file via a
+    // fresh executeScript call, which registers a brand-new onMessage
+    // listener below. If this instance's own listener stayed registered,
+    // both would react to the next ROOTS_INIT broadcast — double shadow
+    // hosts, a double DOM scan, double-counted stats. Removing it here
+    // ensures exactly one listener is ever live at a time.
+    chrome.runtime.onMessage.removeListener(handleRuntimeMessage);
     state.active = false;
     window.__rootsInjected = false;
   }
 
-  chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  function handleRuntimeMessage(message, _sender, sendResponse) {
     switch (message?.type) {
       case "ROOTS_INIT":
-        init(message.settings).then(() => sendResponse({ ok: true }));
+        init(message.settings)
+          .then(() => sendResponse({ ok: true }))
+          .catch((err) => sendResponse({ ok: false, error: err?.message ?? String(err) }));
         return true;
       case "ROOTS_TEARDOWN":
         teardown();
@@ -534,5 +557,7 @@
       default:
         return;
     }
-  });
+  }
+
+  chrome.runtime.onMessage.addListener(handleRuntimeMessage);
 })();

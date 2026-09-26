@@ -3,14 +3,32 @@
 // script/styles on demand (activeTab + scripting, no broad host permissions),
 // relay messages between the side panel / options page and content scripts,
 // and keep chrome.storage settings in sync across all surfaces.
+//
+// Active-tab state lives in chrome.storage.session rather than a plain
+// in-memory Map: MV3 service workers are recycled after ~30s idle, which
+// would otherwise silently wipe activation state mid-session.
 
 import { DEFAULT_SETTINGS } from "../shared/settings.js";
 
 const CONTENT_CSS = "src/content/content.css";
 const CONTENT_JS = "src/content/content.js";
+const ACTIVE_TABS_KEY = "activeTabIds";
 
-/** tabId -> boolean */
-const activeTabs = new Map();
+async function getActiveTabIds() {
+  const stored = await chrome.storage.session.get(ACTIVE_TABS_KEY);
+  return new Set(stored[ACTIVE_TABS_KEY] || []);
+}
+
+async function isTabActive(tabId) {
+  return (await getActiveTabIds()).has(tabId);
+}
+
+async function markTabActive(tabId, active) {
+  const ids = await getActiveTabIds();
+  if (active) ids.add(tabId);
+  else ids.delete(tabId);
+  await chrome.storage.session.set({ [ACTIVE_TABS_KEY]: [...ids] });
+}
 
 chrome.runtime.onInstalled.addListener(async (details) => {
   if (details.reason === "install") {
@@ -31,36 +49,39 @@ async function setBadge(tabId, isActive) {
 }
 
 async function activateOnTab(tabId) {
-  if (activeTabs.get(tabId)) return { ok: true, alreadyActive: true };
+  if (await isTabActive(tabId)) return { ok: true, alreadyActive: true };
 
   await chrome.scripting.insertCSS({ target: { tabId }, files: [CONTENT_CSS] });
   await chrome.scripting.executeScript({ target: { tabId }, files: [CONTENT_JS] });
 
   const settings = await getSettings();
-  await chrome.tabs.sendMessage(tabId, { type: "ROOTS_INIT", settings });
+  const initResult = await chrome.tabs.sendMessage(tabId, { type: "ROOTS_INIT", settings });
+  if (!initResult?.ok) {
+    throw new Error(initResult?.error || "content script failed to initialize");
+  }
 
-  activeTabs.set(tabId, true);
+  await markTabActive(tabId, true);
   await setBadge(tabId, true);
   return { ok: true, alreadyActive: false };
 }
 
 async function deactivateOnTab(tabId) {
-  if (!activeTabs.get(tabId)) return { ok: true };
+  if (!(await isTabActive(tabId))) return { ok: true };
   try {
     await chrome.tabs.sendMessage(tabId, { type: "ROOTS_TEARDOWN" });
   } catch {
     // Tab may have navigated away already; nothing to tear down.
   }
-  activeTabs.delete(tabId);
+  await markTabActive(tabId, false);
   await setBadge(tabId, false);
   return { ok: true };
 }
 
-chrome.tabs.onRemoved.addListener((tabId) => activeTabs.delete(tabId));
+chrome.tabs.onRemoved.addListener((tabId) => markTabActive(tabId, false));
 chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
   if (changeInfo.status === "loading") {
-    // Navigation resets any injected content script.
-    activeTabs.delete(tabId);
+    // Navigation invalidates any previously injected content script.
+    markTabActive(tabId, false).catch(() => {});
     setBadge(tabId, false).catch(() => {});
   }
 });
@@ -82,8 +103,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           return;
         }
         case "ROOTS_GET_STATUS": {
-          const tabId = message.tabId;
-          sendResponse({ active: Boolean(activeTabs.get(tabId)) });
+          sendResponse({ active: await isTabActive(message.tabId) });
           return;
         }
         case "ROOTS_GET_SETTINGS": {
@@ -119,7 +139,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area !== "sync" || !changes.settings) return;
   const settings = changes.settings.newValue;
-  for (const tabId of activeTabs.keys()) {
-    chrome.tabs.sendMessage(tabId, { type: "ROOTS_SETTINGS_UPDATED", settings }).catch(() => {});
-  }
+  getActiveTabIds().then((ids) => {
+    for (const tabId of ids) {
+      chrome.tabs.sendMessage(tabId, { type: "ROOTS_SETTINGS_UPDATED", settings }).catch(() => {});
+    }
+  });
 });
